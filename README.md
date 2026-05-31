@@ -298,19 +298,7 @@ DELETE /api/drops/expired
 
 ---
 
-## 🌐 Deploy recomendado
 
-Para subir el proyecto sin cambiar demasiado la arquitectura:
-
-Render Web Service + PostgreSQL
-
-También puede usarse:
-
-Render + Supabase PostgreSQL
-
-Render es una buena opción para esta versión porque permite ejecutar el servidor Express de forma directa.
-
----
 
 ## 🔒 Nota sobre geolocalización
 
@@ -410,7 +398,7 @@ Dentro de la app, el icono se usa como favicon y como marca visual.
 
 ## 👤 Autor
 
-Proyecto creado por **Matías Isaac Frutos González**.
+Proyecto creado por **Matias Isaac Frutos González**.
 
 ---
 
