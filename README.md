@@ -1,129 +1,182 @@
-# Hermes Drop
+# 🪽 Hermes Drop
 
-![Hermes Drop](frontend/public/hermes-icon.png)
+<p align="center">
+  <img src="frontend/public/hermes-icon.png" alt="Hermes Drop" width="120" height="120" style="border-radius:50%;" />
+</p>
 
-## Mensajería geolocalizada sin login
+<p align="center">
+  <strong>Mensajes que solo existen donde tienen sentido.</strong>
+</p>
 
-**Hermes Drop** es una aplicación web para crear mensajes geolocalizados que solo pueden leerse cuando la persona está físicamente dentro del rango definido.
+<p align="center">
+  📍 Geolocalización · 🔐 Clave opcional · ⏳ Duración limitada · 🖼️ Foto opcional · 🧭 Sin login
+</p>
 
-No usa login.  
-No usa registro.  
+---
+
+## ✨ Descripción
+
+**Hermes Drop** es una demostración de una aplicación web de mensajería geolocalizada.
+
+Permite crear mensajes llamados **Drops**, asociados a una ubicación física.  
+Estos mensajes solo pueden desbloquearse cuando la persona está dentro del rango definido.
+
+No requiere cuenta.  
+No requiere registro.  
 No usa perfiles.  
-Solo ubicación, rango, duración, mensaje, foto opcional y una clave opcional.
+
+La experiencia se basa en una lógica simple:
+
+> 📍 Estar en el lugar correcto desbloquea el mensaje correcto.
 
 ---
 
-## Concepto
+## 🎯 Propósito del proyecto
 
-> Mensajes que solo existen donde tienen sentido.
+Este proyecto fue creado como una demostración funcional de una experiencia digital basada en ubicación.
 
-Hermes Drop permite dejar un mensaje en una ubicación física.  
-Ese mensaje queda bloqueado hasta que otra persona llega al lugar correcto.
+La idea es explorar cómo combinar:
 
-Es una experiencia digital atada al mundo real.
+- Mensajería temporal.
+- Geolocalización.
+- Contenido efímero.
+- Interacción física-digital.
+- Experiencias urbanas.
+- Drops de lectura única.
 
----
-
-## ¿Para qué sirve?
-
-Hermes Drop puede usarse para:
-
-- Juegos urbanos.
-- Búsquedas del tesoro.
-- Mensajes temporales.
-- Experiencias interactivas.
-- Eventos.
-- Pistas geográficas.
-- Notas anónimas por ubicación.
-- Drops digitales de lectura única.
-- Activaciones de marca.
-- Comunicación física-digital sin cuentas.
+Hermes Drop no busca ser una red social tradicional.  
+La propuesta es más directa: crear mensajes que viven en lugares específicos.
 
 ---
 
-## Funcionalidades principales
+## 🧭 Cómo funciona
 
-### Crear Drops
+### 1. Crear un Drop
 
-El usuario puede crear un mensaje desde la web definiendo:
+El usuario crea un mensaje desde la web.
 
-- Título opcional.
-- Mensaje.
-- Emojis.
-- Foto opcional.
-- Rango de lectura.
-- Duración.
-- Palabra clave opcional.
+Puede definir:
 
----
-
-### Leer Drops cercanos
-
-La app obtiene la ubicación desde el navegador y busca mensajes disponibles cerca.
-
-Si la persona está dentro del rango definido, puede desbloquear el Drop.
+- 📝 Título opcional.
+- 💬 Mensaje.
+- 😀 Emojis.
+- 🖼️ Foto opcional.
+- 📍 Rango de lectura.
+- ⏳ Duración.
+- 🔐 Palabra clave opcional.
 
 ---
 
-### Desbloqueo por ubicación
+### 2. Buscar Drops cercanos
 
-Cada Drop se valida contra la ubicación actual del usuario.
+La aplicación solicita la ubicación del navegador.
 
-Ejemplo:
+Luego compara esa ubicación con los Drops activos.
 
-Radio del Drop: 50 metros
-Distancia del usuario: 32 metros
-Resultado: desbloqueable
-
-Si el usuario está fuera del rango, el mensaje no se muestra.
+Si el usuario está dentro del rango permitido, el Drop aparece como disponible.
 
 ---
 
-### Palabra clave opcional
+### 3. Desbloquear mensaje
 
-Un Drop puede estar protegido con una clave.
+Para leer un Drop, se valida:
 
-Para leerlo se necesita:
+- 📍 Ubicación actual.
+- 📏 Distancia al punto.
+- 🔐 Palabra clave, si fue configurada.
+- ⏳ Fecha de expiración.
 
-1. Estar dentro del rango.
-2. Ingresar la palabra clave correcta.
-
----
-
-### Foto opcional
-
-Cada Drop puede incluir una imagen adjunta.
-
-La foto se muestra únicamente cuando el mensaje se desbloquea correctamente.
+Si todo coincide, el mensaje se desbloquea.
 
 ---
 
-### Lectura única
+### 4. Lectura única
 
-Cuando un Drop se lee correctamente:
+Una vez que el mensaje se desbloquea correctamente:
 
-1. Se entrega el mensaje.
-2. Se muestra la foto si existe.
-3. Se elimina de la base de datos.
+- Se muestra el contenido.
+- Se muestra la imagen, si existe.
+- El Drop se elimina de la base de datos.
 
-Esto permite que los mensajes funcionen como contenido efímero.
+Esto convierte cada mensaje en una experiencia efímera.
 
 ---
 
-### Duración del mensaje
+## 🧩 Funcionalidades
 
-Cada Drop tiene una fecha de expiración.
+### 📍 Mensajes por ubicación
+
+Cada Drop queda asociado a una coordenada específica.
+
+El mensaje solo puede leerse dentro del radio configurado.
+
+---
+
+### 📏 Rango configurable
+
+El creador puede definir el radio de lectura:
+
+- 10 metros.
+- 25 metros.
+- 50 metros.
+- 100 metros.
+- 250 metros.
+- 500 metros.
+
+---
+
+### ⏳ Duración limitada
+
+Cada Drop tiene una duración.
 
 Cuando vence:
 
-- El Drop deja de aparecer.
-- El Drop ya no puede leerse.
-
-Además, el backend incluye una ruta para limpiar Drops expirados.
+- Deja de aparecer.
+- No puede desbloquearse.
+- Puede limpiarse desde el backend.
 
 ---
 
-## Stack tecnológico
+### 🔐 Clave opcional
+
+Un Drop puede ser público por ubicación o protegido con palabra clave.
+
+Para Drops protegidos se necesita:
+
+1. Estar dentro del rango.
+2. Ingresar la clave correcta.
+
+---
+
+### 🖼️ Foto opcional
+
+El usuario puede adjuntar una imagen al Drop.
+
+La imagen solo se muestra cuando el mensaje se desbloquea correctamente.
+
+---
+
+### 😀 Emojis rápidos
+
+El formulario incluye una barra de emojis animados para crear mensajes más expresivos.
+
+---
+
+### 🗺️ Mapa interactivo
+
+Hermes Drop usa un mapa para visualizar la zona y los Drops disponibles.
+
+---
+
+### 🧹 Eliminación automática al leer
+
+Los Drops son de lectura única.
+
+Cuando alguien los desbloquea, se eliminan de la base.
+
+---
+
+## 🛠️ Tecnologías utilizadas
 
 ### Frontend
 
@@ -132,7 +185,7 @@ Además, el backend incluye una ruta para limpiar Drops expirados.
 - JavaScript
 - Lucide Icons
 - Leaflet Map
-- Geolocation API del navegador
+- Geolocation API
 
 ### Backend
 
@@ -148,77 +201,38 @@ Además, el backend incluye una ruta para limpiar Drops expirados.
 ### Base de datos
 
 - PostgreSQL
-- Compatible con pgAdmin, Render PostgreSQL o Supabase PostgreSQL
+- Compatible con pgAdmin
+- Compatible con Render PostgreSQL
+- Compatible con Supabase PostgreSQL
 
 ---
 
-## Estructura del proyecto
+## 🎨 Interfaz
 
-hermes-drop/
-│
-├── backend/
-│   ├── app.js
-│   ├── server.js
-│   │
-│   ├── config/
-│   │   └── db.js
-│   │
-│   ├── controllers/
-│   │   └── drops.controller.js
-│   │
-│   ├── database/
-│   │   ├── schema.sql
-│   │   └── seed.sql
-│   │
-│   ├── middlewares/
-│   │   ├── errorHandler.js
-│   │   └── rateLimit.js
-│   │
-│   ├── routes/
-│   │   └── drops.routes.js
-│   │
-│   ├── services/
-│   │   └── drops.service.js
-│   │
-│   └── utils/
-│       ├── distance.js
-│       ├── hash.js
-│       └── validators.js
-│
-├── frontend/
-│   ├── index.html
-│   │
-│   ├── public/
-│   │   ├── favicon.svg
-│   │   └── hermes-icon.png
-│   │
-│   └── src/
-│       ├── css/
-│       │   ├── buttons.css
-│       │   ├── forms.css
-│       │   ├── layout.css
-│       │   ├── map.css
-│       │   └── styles.css
-│       │
-│       └── js/
-│           ├── api.js
-│           ├── app.js
-│           ├── drops.create.js
-│           ├── drops.nearby.js
-│           ├── drops.unlock.js
-│           ├── geo.js
-│           ├── map.js
-│           └── ui.js
-│
-├── .env
-├── .gitignore
-├── package.json
-├── package-lock.json
-└── README.md
+La interfaz está pensada para ser:
+
+- Clara.
+- Moderna.
+- Responsive.
+- Animada.
+- Ligera.
+- Sin fricción.
+- Sin login.
+- Fácil de usar desde celular.
+
+Incluye:
+
+- Iconografía moderna.
+- Animaciones suaves.
+- Estados visuales.
+- Mapa interactivo.
+- Mensajes desbloqueados con mejor presentación.
+- Barra de emojis animados.
+- Icono personalizado del proyecto.
 
 ---
 
-## Instalación local
+## 🚀 Instalación local
 
 ### 1. Clonar el repositorio
 
@@ -233,7 +247,7 @@ npm install
 
 ---
 
-### 3. Crear la base de datos
+### 3. Crear base de datos
 
 Crear una base PostgreSQL llamada:
 
@@ -274,33 +288,7 @@ http://localhost:3000
 
 ---
 
-## Scripts disponibles
-
-npm run dev
-
-Ejecuta el proyecto en modo desarrollo.
-
-npm start
-
-Ejecuta el proyecto en modo producción.
-
----
-
-## Variables de entorno
-
-| Variable | Descripción |
-|---|---|
-| PORT | Puerto donde corre el servidor |
-| DATABASE_URL | URL de conexión PostgreSQL |
-| NODE_ENV | Entorno de ejecución |
-| DROP_MAX_RADIUS_METERS | Rango máximo permitido para un Drop |
-| DROP_MAX_DURATION_MINUTES | Duración máxima permitida |
-| DROP_CREATE_LIMIT_PER_HOUR | Límite de creación por IP |
-| IP_HASH_SECRET | Clave para hashear IPs |
-
----
-
-## API principal
+## 📡 API principal
 
 ### Estado de la API
 
@@ -312,7 +300,7 @@ GET /api
 
 POST /api/drops
 
-Body:
+Body de ejemplo:
 
 {
   "title": "Mensaje secreto",
@@ -337,7 +325,7 @@ GET /api/drops/nearby?lat=-34.603722&lng=-58.381592
 
 POST /api/drops/unlock
 
-Body:
+Body de ejemplo:
 
 {
   "publicCode": "HD-ABC123",
@@ -352,7 +340,7 @@ Body:
 
 POST /api/drops/report
 
-Body:
+Body de ejemplo:
 
 {
   "publicCode": "HD-ABC123"
@@ -366,9 +354,9 @@ DELETE /api/drops/expired
 
 ---
 
-## Deploy recomendado
+## 🌐 Deploy recomendado
 
-Para subirlo rápido sin cambiar demasiado la arquitectura:
+Para subir el proyecto sin cambiar demasiado la arquitectura:
 
 Render Web Service + PostgreSQL
 
@@ -376,50 +364,60 @@ También puede usarse:
 
 Render + Supabase PostgreSQL
 
----
-
-## Importante sobre geolocalización
-
-La geolocalización funciona correctamente en:
-
-localhost
-
-o en sitios con:
-
-HTTPS
-
-En producción se recomienda usar HTTPS. Render proporciona HTTPS automáticamente.
+Render es una buena opción para esta versión porque permite ejecutar el servidor Express de forma directa.
 
 ---
 
-## Limitaciones
+## 🔒 Nota sobre geolocalización
 
 Hermes Drop usa la ubicación entregada por el navegador.
 
-Esto significa que:
+Funciona correctamente en:
 
-- En celulares suele ser bastante precisa.
-- En notebooks puede ser menos precisa.
-- Usuarios técnicos podrían falsear su ubicación.
+- localhost
+- sitios con HTTPS
 
-Por eso Hermes Drop está pensado para experiencias, juegos, eventos y mensajes geográficos, no para seguridad crítica.
+En producción se recomienda usar HTTPS.
 
----
+La ubicación puede variar según el dispositivo:
 
-## Seguridad básica incluida
-
-- No hay usuarios.
-- No hay emails.
-- No hay contraseñas de cuenta.
-- La clave del Drop se guarda hasheada.
-- Los mensajes vencen.
-- Los mensajes se eliminan al leerse.
-- Existe límite de creación por IP.
-- Existen reportes básicos.
+- En celulares suele ser más precisa.
+- En notebooks puede depender de WiFi o IP.
+- En escritorio puede ser menos exacta.
 
 ---
 
-## Roadmap
+## ⚠️ Limitaciones
+
+Este proyecto es una demostración funcional.
+
+No debe utilizarse para información crítica, credenciales, pagos, datos sensibles o seguridad de alto riesgo.
+
+La ubicación del navegador puede ser manipulada por usuarios técnicos.
+
+Hermes Drop está pensado para experiencias, juegos, eventos, demostraciones y comunicación geográfica liviana.
+
+---
+
+## 🧪 Estado del proyecto
+
+Hermes Drop se encuentra en etapa de demostración.
+
+Incluye:
+
+- Crear Drops.
+- Buscar Drops cercanos.
+- Desbloquear por ubicación.
+- Clave opcional.
+- Foto opcional.
+- Emojis animados.
+- Mapa interactivo.
+- Lectura única.
+- Expiración por duración.
+
+---
+
+## 🗺️ Roadmap
 
 ### Versión 0.1
 
@@ -433,54 +431,47 @@ Por eso Hermes Drop está pensado para experiencias, juegos, eventos y mensajes 
 
 ### Versión 0.2
 
-- Limpieza automática de expirados.
+- Limpieza automática de Drops expirados.
+- Mejor radar visual.
+- Modo PWA instalable.
+- Mejor gestión de imágenes.
 - Panel mínimo de moderación.
-- Supabase Storage para imágenes.
-- Mejor radar de Drops cercanos.
-- PWA instalable.
 
 ### Versión 0.3
 
-- Modo evento.
 - Drops encadenados.
+- Modo evento.
 - Rutas de pistas.
-- Estadísticas.
 - QR de acceso.
+- Estadísticas.
 - Modo búsqueda del tesoro.
 
 ---
 
-## Icono
+## 🖼️ Icono del proyecto
 
 El icono principal debe guardarse en:
 
 frontend/public/hermes-icon.png
 
-Y se usa desde:
+Para que se vea más chico y redondo en GitHub se usa así:
 
-<link rel="icon" href="./public/hermes-icon.png" type="image/png" />
-<link rel="apple-touch-icon" href="./public/hermes-icon.png" />
+<p align="center">
+  <img src="frontend/public/hermes-icon.png" alt="Hermes Drop" width="120" height="120" style="border-radius:50%;" />
+</p>
 
----
-
-## Autor
-
-Proyecto creado por Matías Isaac Frutos González.
+Dentro de la app, el icono se usa como favicon y como marca visual.
 
 ---
 
-## Derechos de uso
+## 👤 Autor
 
-Este proyecto es de uso privado y propietario.
-
-No está autorizado su uso, copia, modificación, redistribución, publicación, comercialización ni explotación total o parcial sin autorización expresa del autor.
-
-El código, diseño, concepto, nombre, estructura, iconografía y documentación pertenecen a su autor.
+Proyecto creado por **Matías Isaac Frutos González**.
 
 ---
 
-## Licencia
+## 📌 Nota
 
-Todos los derechos reservados.
+Este repositorio presenta una demostración del proyecto Hermes Drop.
 
-Este proyecto no es software libre ni de código abierto.
+El objetivo es mostrar el concepto, la arquitectura y una implementación funcional de mensajería geolocalizada sin login.
