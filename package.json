@@ -1,0 +1,31 @@
+{
+  "name": "hermes-drop",
+  "version": "0.1.0",
+  "description": "Hermes Drop - Mensajería geolocalizada sin login, con rango, expiración y clave opcional.",
+  "main": "backend/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node backend/server.js",
+    "start": "node backend/server.js"
+  },
+  "keywords": [
+    "hermes-drop",
+    "geolocation",
+    "messages",
+    "node",
+    "express",
+    "postgresql"
+  ],
+  "author": "Matias Isaac Frutos Gonzalez",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {}
+}

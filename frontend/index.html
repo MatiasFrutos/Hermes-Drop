@@ -1,0 +1,413 @@
+<!-- Hermes Drop · Mensajería geolocalizada sin login -->
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Hermes Drop - Mensajes que solo se desbloquean cuando estás en el lugar correcto." />
+
+  <title>Hermes Drop</title>
+
+  <link rel="icon" href="./public/hermes-icon.png" type="image/png" />
+  <link rel="apple-touch-icon" href="./public/hermes-icon.png" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <link rel="stylesheet" href="./src/css/styles.css" />
+  <link rel="stylesheet" href="./src/css/layout.css" />
+  <link rel="stylesheet" href="./src/css/forms.css" />
+  <link rel="stylesheet" href="./src/css/buttons.css" />
+  <link rel="stylesheet" href="./src/css/map.css" />
+</head>
+
+<body>
+  <div class="hd-page-bg">
+    <span class="hd-blob hd-blob--one"></span>
+    <span class="hd-blob hd-blob--two"></span>
+    <span class="hd-blob hd-blob--three"></span>
+  </div>
+
+  <div class="hd-app-shell">
+    <header class="hd-header">
+      <a class="hd-brand" href="#" aria-label="Hermes Drop">
+        <div class="hd-brand__mark hd-brand__mark--image">
+          <img src="./public/hermes-icon.png" alt="Hermes Drop" />
+        </div>
+
+        <div>
+          <h1>Hermes Drop</h1>
+          <p>Mensajes por ubicación</p>
+        </div>
+      </a>
+
+      <nav class="hd-nav" aria-label="Navegación principal">
+        <a href="#crear">
+          <i data-lucide="plus-circle"></i>
+          Crear
+        </a>
+
+        <a href="#explorar">
+          <i data-lucide="radar"></i>
+          Explorar
+        </a>
+
+        <a href="#mapa">
+          <i data-lucide="map"></i>
+          Mapa
+        </a>
+      </nav>
+
+      <div class="hd-header__status" id="locationStatus">
+        <i data-lucide="map-pin"></i>
+        <span>Ubicación pendiente</span>
+      </div>
+    </header>
+
+    <main class="hd-main">
+      <section class="hd-board">
+        <section class="hd-board__intro">
+          <div class="hd-intro">
+            <div class="hd-hero__badge">
+              <i data-lucide="lock-keyhole"></i>
+              Sin login · Sin registro · Solo ubicación
+            </div>
+
+            <h2>Mensajes que se leen solo en el lugar correcto.</h2>
+
+            <p>
+              Creá un Drop con texto, emoji, foto opcional, radio de lectura, duración y clave.
+              El contenido se desbloquea cuando alguien llega físicamente al punto.
+            </p>
+          </div>
+
+          <div class="hd-intro-actions">
+            <button class="hd-btn hd-btn--primary" type="button" id="openCreateDropButton">
+              <i data-lucide="plus"></i>
+              Crear Drop
+            </button>
+
+            <button class="hd-btn hd-btn--secondary" type="button" id="findNearbyDropsButton">
+              <i data-lucide="scan-search"></i>
+              Buscar cercanos
+            </button>
+          </div>
+        </section>
+
+        <section class="hd-summary">
+          <div class="hd-summary__item">
+            <i data-lucide="user-x"></i>
+            <div>
+              <strong>Anónimo</strong>
+              <span>No hay cuentas ni perfiles.</span>
+            </div>
+          </div>
+
+          <div class="hd-summary__item">
+            <i data-lucide="locate-fixed"></i>
+            <div>
+              <strong>Rango</strong>
+              <span>Distancia máxima para leerlo.</span>
+            </div>
+          </div>
+
+          <div class="hd-summary__item">
+            <i data-lucide="timer"></i>
+            <div>
+              <strong>Duración</strong>
+              <span>Tiempo antes de desaparecer.</span>
+            </div>
+          </div>
+
+          <div class="hd-summary__item">
+            <i data-lucide="image"></i>
+            <div>
+              <strong>Foto opcional</strong>
+              <span>Adjuntá contexto visual.</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="hd-workspace">
+          <article class="hd-panel hd-panel--form" id="crear">
+            <div class="hd-panel__header">
+              <div>
+                <span class="hd-kicker">
+                  <i data-lucide="message-square-plus"></i>
+                  Nuevo mensaje
+                </span>
+                <h3>Crear Drop</h3>
+              </div>
+            </div>
+
+            <form class="hd-form" id="createDropForm">
+              <div class="hd-form__group">
+                <label for="dropTitle">Título opcional</label>
+                <input id="dropTitle" name="title" type="text" maxlength="80" placeholder="Ej: Pista del parque" />
+              </div>
+
+              <div class="hd-form__group">
+                <label for="dropMessage">Mensaje</label>
+
+                <div class="hd-emoji-dock" aria-label="Emoticones rápidos">
+                  <div class="hd-emoji-dock__header">
+                    <span>
+                      <i data-lucide="smile-plus"></i>
+                      Reacciones rápidas
+                    </span>
+                    <small>Toque y queda pegado al mensaje</small>
+                  </div>
+
+                  <div class="hd-emoji-bar">
+                    <button type="button" data-emoji="📍" data-label="Ubicación" style="--i: 1;">
+                      <span>📍</span>
+                    </button>
+                    <button type="button" data-emoji="🔐" data-label="Clave" style="--i: 2;">
+                      <span>🔐</span>
+                    </button>
+                    <button type="button" data-emoji="🧭" data-label="Explorar" style="--i: 3;">
+                      <span>🧭</span>
+                    </button>
+                    <button type="button" data-emoji="👀" data-label="Mirada" style="--i: 4;">
+                      <span>👀</span>
+                    </button>
+                    <button type="button" data-emoji="🔥" data-label="Importante" style="--i: 5;">
+                      <span>🔥</span>
+                    </button>
+                    <button type="button" data-emoji="🎯" data-label="Objetivo" style="--i: 6;">
+                      <span>🎯</span>
+                    </button>
+                    <button type="button" data-emoji="🚀" data-label="Acción" style="--i: 7;">
+                      <span>🚀</span>
+                    </button>
+                    <button type="button" data-emoji="🕵️" data-label="Secreto" style="--i: 8;">
+                      <span>🕵️</span>
+                    </button>
+                    <button type="button" data-emoji="✅" data-label="Confirmado" style="--i: 9;">
+                      <span>✅</span>
+                    </button>
+                    <button type="button" data-emoji="⚠️" data-label="Atención" style="--i: 10;">
+                      <span>⚠️</span>
+                    </button>
+                    <button type="button" data-emoji="💎" data-label="Premium" style="--i: 11;">
+                      <span>💎</span>
+                    </button>
+                    <button type="button" data-emoji="🪽" data-label="Hermes" style="--i: 12;">
+                      <span>🪽</span>
+                    </button>
+                  </div>
+                </div>
+
+                <textarea id="dropMessage" name="message" rows="4" maxlength="1000" required placeholder="Escribí el mensaje que se desbloquea en el lugar correcto..."></textarea>
+                <small>Podés usar texto, emojis y una foto opcional. Máximo 1000 caracteres.</small>
+              </div>
+
+              <div class="hd-form__group">
+                <label for="dropImage">Foto opcional</label>
+
+                <label class="hd-file-zone" for="dropImage">
+                  <input id="dropImage" name="image" type="file" accept="image/png,image/jpeg,image/webp" />
+                  <span class="hd-file-zone__icon">
+                    <i data-lucide="image-plus"></i>
+                  </span>
+                  <span>
+                    <strong>Adjuntar imagen</strong>
+                    <small>JPG, PNG o WEBP. Máximo recomendado: 1 MB.</small>
+                  </span>
+                </label>
+
+                <div class="hd-image-preview" id="dropImagePreview" hidden>
+                  <img id="dropImagePreviewImg" alt="Vista previa de la foto adjunta" />
+                  <button class="hd-image-preview__remove" type="button" id="removeDropImageButton">
+                    <i data-lucide="x"></i>
+                    Quitar foto
+                  </button>
+                </div>
+              </div>
+
+              <div class="hd-form__row">
+                <div class="hd-form__group">
+                  <label for="dropRadius">Rango</label>
+                  <select id="dropRadius" name="radiusMeters">
+                    <option value="10">10 metros</option>
+                    <option value="25">25 metros</option>
+                    <option value="50" selected>50 metros</option>
+                    <option value="100">100 metros</option>
+                    <option value="250">250 metros</option>
+                    <option value="500">500 metros</option>
+                  </select>
+                  <small id="radiusHelp">Define qué tan cerca debe estar la persona para desbloquear el mensaje.</small>
+                </div>
+
+                <div class="hd-form__group">
+                  <label for="dropDuration">Duración</label>
+                  <select id="dropDuration" name="durationMinutes">
+                    <option value="15">15 minutos</option>
+                    <option value="60">1 hora</option>
+                    <option value="360">6 horas</option>
+                    <option value="1440" selected>24 horas</option>
+                    <option value="10080">7 días</option>
+                  </select>
+                  <small id="durationHelp">Cuando termina este tiempo, el Drop deja de estar disponible.</small>
+                </div>
+              </div>
+
+              <div class="hd-help-strip">
+                <div>
+                  <i data-lucide="locate-fixed"></i>
+                  <span><strong>Rango:</strong> si elegís 50 m, solo se lee dentro de esos 50 metros.</span>
+                </div>
+                <div>
+                  <i data-lucide="timer-reset"></i>
+                  <span><strong>Duración:</strong> pasado ese tiempo, el mensaje expira solo.</span>
+                </div>
+              </div>
+
+              <div class="hd-form__group">
+                <label for="dropKeyword">Palabra clave opcional</label>
+                <input id="dropKeyword" name="keyword" type="text" maxlength="80" placeholder="Ej: hermes" />
+                <small>Si cargás una clave, deben estar en el lugar y escribirla.</small>
+              </div>
+
+              <div class="hd-form__actions">
+                <button class="hd-btn hd-btn--primary" type="submit">
+                  <i data-lucide="save"></i>
+                  Guardar Drop
+                </button>
+
+                <button class="hd-btn hd-btn--ghost" type="reset">
+                  <i data-lucide="eraser"></i>
+                  Limpiar
+                </button>
+              </div>
+            </form>
+          </article>
+
+          <article class="hd-panel hd-panel--drops" id="explorar">
+            <div class="hd-panel__header hd-panel__header--inline">
+              <div>
+                <span class="hd-kicker">
+                  <i data-lucide="radar"></i>
+                  Exploración
+                </span>
+                <h3>Drops cercanos</h3>
+              </div>
+
+              <button class="hd-btn hd-btn--compact" type="button" id="refreshNearbyDropsButton">
+                <i data-lucide="refresh-cw"></i>
+                Actualizar
+              </button>
+            </div>
+
+            <div class="hd-drop-list" id="nearbyDropsList">
+              <div class="hd-empty">
+                <i data-lucide="scan-line"></i>
+                <strong>Escaneo pendiente</strong>
+                <span>Presioná “Buscar cercanos” para detectar Drops en tu zona.</span>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="hd-map-section" id="mapa">
+          <div class="hd-panel__header hd-panel__header--inline">
+            <div>
+              <span class="hd-kicker">
+                <i data-lucide="map"></i>
+                Mapa operativo
+              </span>
+              <h3>Zona Hermes</h3>
+            </div>
+
+            <span class="hd-map-hint">
+              <i data-lucide="mouse-pointer-2"></i>
+              Mové el mapa y explorá
+            </span>
+          </div>
+
+          <div id="map" class="hd-map"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div class="hd-toast" id="toast" aria-live="polite"></div>
+
+  <dialog class="hd-modal" id="unlockModal">
+    <form method="dialog" class="hd-modal__content" id="unlockDropForm">
+      <div class="hd-modal__header">
+        <div>
+          <span class="hd-kicker">
+            <i data-lucide="key-round"></i>
+            Drop protegido
+          </span>
+          <h3>Ingresá la palabra clave</h3>
+        </div>
+
+        <button class="hd-modal__close" type="button" id="closeUnlockModalButton" aria-label="Cerrar">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <input type="hidden" id="unlockPublicCode" />
+
+      <div class="hd-form__group">
+        <label for="unlockKeyword">Palabra clave</label>
+        <input id="unlockKeyword" type="text" autocomplete="off" required placeholder="Clave del Drop" />
+      </div>
+
+      <div class="hd-form__actions">
+        <button class="hd-btn hd-btn--primary" type="submit">
+          <i data-lucide="unlock"></i>
+          Desbloquear
+        </button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="hd-modal hd-message-modal" id="messageModal">
+    <div class="hd-modal__content hd-message-modal__content">
+      <div class="hd-message-modal__hero">
+        <div class="hd-message-modal__icon">
+          <img src="./public/hermes-icon.png" alt="Hermes Drop" />
+        </div>
+
+        <div>
+          <span class="hd-kicker">
+            <i data-lucide="check-circle-2"></i>
+            Mensaje desbloqueado
+          </span>
+          <h3 id="messageModalTitle">Hermes Drop</h3>
+        </div>
+
+        <button class="hd-modal__close" type="button" id="closeMessageModalButton" aria-label="Cerrar">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <div class="hd-message-modal__image" id="messageModalImageWrap" hidden>
+        <img id="messageModalImage" alt="Imagen adjunta del Drop desbloqueado" />
+      </div>
+
+      <div class="hd-message-modal__body">
+        <p class="hd-message-body" id="messageModalBody"></p>
+      </div>
+
+      <div class="hd-message-modal__meta">
+        <span>
+          <i data-lucide="locate-fixed"></i>
+          Desbloqueado por ubicación
+        </span>
+        <span>
+          <i data-lucide="shield-check"></i>
+          Validación completada
+        </span>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <script type="module" src="./src/js/app.js"></script>
+</body>
+</html>
