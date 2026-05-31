@@ -232,73 +232,19 @@ Incluye:
 
 ---
 
-## 📡 API principal
+## 🌐 Deploy recomendado
 
-### Estado de la API
+Para subir el proyecto sin cambiar demasiado la arquitectura:
 
-GET /api
+Render Web Service + PostgreSQL
 
----
+También puede usarse:
 
-### Crear Drop
+Render + Supabase PostgreSQL
 
-POST /api/drops
-
-Body de ejemplo:
-
-{
-  "title": "Mensaje secreto",
-  "message": "La pista está cerca del árbol.",
-  "imageDataUrl": "",
-  "latitude": -34.603722,
-  "longitude": -58.381592,
-  "radiusMeters": 50,
-  "durationMinutes": 1440,
-  "keyword": "hermes"
-}
+Render es una buena opción para esta versión porque permite ejecutar el servidor Express de forma directa.
 
 ---
-
-### Buscar Drops cercanos
-
-GET /api/drops/nearby?lat=-34.603722&lng=-58.381592
-
----
-
-### Desbloquear Drop
-
-POST /api/drops/unlock
-
-Body de ejemplo:
-
-{
-  "publicCode": "HD-ABC123",
-  "latitude": -34.603722,
-  "longitude": -58.381592,
-  "keyword": "hermes"
-}
-
----
-
-### Reportar Drop
-
-POST /api/drops/report
-
-Body de ejemplo:
-
-{
-  "publicCode": "HD-ABC123"
-}
-
----
-
-### Limpiar Drops expirados
-
-DELETE /api/drops/expired
-
----
-
-
 
 ## 🔒 Nota sobre geolocalización
 
@@ -398,7 +344,7 @@ Dentro de la app, el icono se usa como favicon y como marca visual.
 
 ## 👤 Autor
 
-Proyecto creado por **Matias Isaac Frutos González**.
+Proyecto creado por **Matías Isaac Frutos González**.
 
 ---
 
