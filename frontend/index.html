@@ -18,6 +18,15 @@
   <link rel="stylesheet" href="./src/css/forms.css" />
   <link rel="stylesheet" href="./src/css/buttons.css" />
   <link rel="stylesheet" href="./src/css/map.css" />
+  <link rel="stylesheet" href="./src/css/futuristic.css" />
+
+  <script>
+    try {
+      document.documentElement.setAttribute("data-theme", localStorage.getItem("hermes:theme") === "light" ? "light" : "dark");
+    } catch (e) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  </script>
 </head>
 
 <body>

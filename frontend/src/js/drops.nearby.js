@@ -35,6 +35,7 @@ export function bindNearbyDropsEvents() {
 export async function scanNearbyDrops(button = null) {
   try {
     setButtonLoading(button, true, "Escaneando...");
+    window.dispatchEvent(new CustomEvent("hermes:scan", { detail: { scanning: true } }));
 
     const position = await getCurrentPosition();
 
@@ -47,6 +48,7 @@ export async function scanNearbyDrops(button = null) {
 
     renderNearbyDrops(currentDrops);
     renderDropMarkers(currentDrops);
+    window.dispatchEvent(new CustomEvent("hermes:nearby", { detail: { drops: currentDrops } }));
 
     if (!currentDrops.length) {
       showToast("No hay Drops cercanos en esta zona.", "warning");
@@ -63,6 +65,7 @@ export async function scanNearbyDrops(button = null) {
 
     showToast(error?.payload?.error || "No se pudieron buscar Drops cercanos.", "danger");
   } finally {
+    window.dispatchEvent(new CustomEvent("hermes:scan", { detail: { scanning: false } }));
     setButtonLoading(button, false);
     renderIcons();
   }
