@@ -11,11 +11,11 @@ const KEYS = {
 };
 
 const ACCENTS = [
-  { name: "Cian", a: "#22d3ee", b: "#8b5cf6", c: "#3b82f6" },
-  { name: "Esmeralda", a: "#34d399", b: "#22d3ee", c: "#10b981" },
-  { name: "Ámbar", a: "#fbbf24", b: "#f472b6", c: "#f97316" },
-  { name: "Rosa", a: "#f472b6", b: "#a78bfa", c: "#ec4899" },
-  { name: "Violeta", a: "#a78bfa", b: "#38bdf8", c: "#7c3aed" }
+  { name: "Champagne", dark: "#d9c7a3", light: "#8a6d3b" },
+  { name: "Hielo", dark: "#a9c8f5", light: "#2f5fa8" },
+  { name: "Salvia", dark: "#a8cfa0", light: "#3d7a46" },
+  { name: "Coral", dark: "#f0a892", light: "#b4523a" },
+  { name: "Lila", dark: "#c5b4f2", light: "#6a4cc0" }
 ];
 
 const TEMPLATES = [
@@ -57,10 +57,11 @@ export function initPremium() {
   applyAccent(Number(read(KEYS.accent, "0")));
   setZen(read(KEYS.zen) === "1", false);
 
-  bindRipple();
   bindMagnetic();
   bindStagger();
   bindNetwork();
+  bindNavIndicator();
+  window.addEventListener("hermes:theme", () => applyAccent(Number(read(KEYS.accent, "0"))));
 
   registerCommand({ icon: "focus", label: "Modo zen (minimalista)", run: () => setZen(!document.body.classList.contains("px-zen")) });
   registerCommand({ icon: "palette", label: "Cambiar color de acento", run: cycleAccent });
@@ -158,12 +159,10 @@ function injectBackToTop() {
 
 function applyAccent(index) {
   const accent = ACCENTS[index] || ACCENTS[0];
+  const light = document.documentElement.getAttribute("data-theme") === "light";
   const root = document.documentElement.style;
 
-  root.setProperty("--fx-neon", accent.a);
-  root.setProperty("--fx-neon-2", accent.b);
-  root.setProperty("--fx-neon-3", accent.c);
-  root.setProperty("--hd-primary", accent.a);
+  root.setProperty("--accent", light ? accent.light : accent.dark);
 
   qsa(".px-accents button").forEach((btn, i) => btn.classList.toggle("is-on", i === index));
 }
@@ -185,7 +184,7 @@ function injectAccentPicker() {
 
   picker.className = "px-accents";
   picker.innerHTML = ACCENTS.map(
-    (a, i) => `<button type="button" data-accent="${i}" title="${a.name}" aria-label="Acento ${a.name}" style="background:linear-gradient(135deg, ${a.a}, ${a.b})"></button>`
+    (a, i) => `<button type="button" data-accent="${i}" title="${a.name}" aria-label="Acento ${a.name}" style="background:${a.dark}"></button>`
   ).join("");
 
   dock.appendChild(picker);
@@ -448,26 +447,6 @@ function openKeys() {
 
 /* ---------- ripple y botones magnéticos ---------- */
 
-function bindRipple() {
-  document.addEventListener("pointerdown", (event) => {
-    const target = event.target.closest(".hd-btn, .fx-dock button");
-
-    if (!target || reducedMotion) return;
-
-    const rect = target.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-    const ripple = document.createElement("span");
-
-    ripple.className = "px-ripple";
-    ripple.style.width = ripple.style.height = `${size}px`;
-    ripple.style.left = `${event.clientX - rect.left - size / 2}px`;
-    ripple.style.top = `${event.clientY - rect.top - size / 2}px`;
-
-    target.appendChild(ripple);
-    ripple.addEventListener("animationend", () => ripple.remove());
-  });
-}
-
 function bindMagnetic() {
   if (reducedMotion || !window.matchMedia("(hover: hover)").matches) return;
 
@@ -478,7 +457,7 @@ function bindMagnetic() {
       const dy = event.clientY - (rect.top + rect.height / 2);
       const dist = Math.hypot(dx, dy);
 
-      btn.style.transform = dist < 90 ? `translate(${(dx * 0.14).toFixed(1)}px, ${(dy * 0.2).toFixed(1)}px)` : "";
+      btn.style.transform = dist < 80 ? `translate(${(dx * 0.14).toFixed(1)}px, ${(dy * 0.2).toFixed(1)}px)` : "";
     });
   });
 }
@@ -500,4 +479,51 @@ function bindStagger() {
 function bindNetwork() {
   window.addEventListener("offline", () => showToast("Sin conexión. Hermes espera señal…", "warning"));
   window.addEventListener("online", () => showToast("Conexión restablecida.", "success"));
+}
+
+/* ---------- indicador deslizante de navegación ---------- */
+
+function bindNavIndicator() {
+  const nav = qs(".hd-nav");
+  const bar = qs(".hd-nav__bar");
+  const links = qsa("[data-nav]");
+
+  if (!nav || !bar || !links.length) return;
+
+  const move = (link) => {
+    if (!link) {
+      bar.style.opacity = "0";
+      return;
+    }
+
+    bar.style.opacity = "1";
+    bar.style.width = `${link.offsetWidth}px`;
+    bar.style.transform = `translateX(${link.offsetLeft}px)`;
+  };
+
+  const sections = links.map((link) => qs(link.getAttribute("href"))).filter(Boolean);
+  let current = null;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+
+        current = links.find((link) => link.getAttribute("href") === `#${entry.target.id}`) || null;
+        links.forEach((link) => link.classList.toggle("is-active", link === current));
+        move(current);
+      });
+    },
+    { rootMargin: "-40% 0px -55% 0px" }
+  );
+
+  sections.forEach((section) => observer.observe(section));
+
+  links.forEach((link) => {
+    link.addEventListener("mouseenter", () => move(link));
+    link.addEventListener("focus", () => move(link));
+  });
+
+  nav.addEventListener("mouseleave", () => move(current));
+  window.addEventListener("resize", () => move(current));
 }

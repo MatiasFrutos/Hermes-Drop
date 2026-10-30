@@ -15,10 +15,85 @@ import {
 } from "./ui.js";
 
 let currentDrops = [];
+let activeFilter = "all";
+
+const FILTERS = [
+  { id: "all", label: "Todos", test: () => true },
+  { id: "open", label: "Sin clave", test: (drop) => !drop.hasKeyword },
+  { id: "locked", label: "Con clave", test: (drop) => Boolean(drop.hasKeyword) },
+  { id: "photo", label: "Con foto", test: (drop) => Boolean(drop.hasImage) }
+];
+
+const CARDINALS = ["N", "NE", "E", "SE", "S", "SO", "O", "NO"];
+
+function bearingDegrees(from, to) {
+  const rad = Math.PI / 180;
+  const y = Math.sin((to.longitude - from.longitude) * rad) * Math.cos(to.latitude * rad);
+  const x =
+    Math.cos(from.latitude * rad) * Math.sin(to.latitude * rad) -
+    Math.sin(from.latitude * rad) * Math.cos(to.latitude * rad) * Math.cos((to.longitude - from.longitude) * rad);
+
+  return (Math.atan2(y, x) / rad + 360) % 360;
+}
+
+function renderCompass(drop) {
+  const origin = getLastKnownPosition();
+
+  if (!origin || !Number.isFinite(Number(drop.latitude)) || !Number.isFinite(Number(drop.longitude))) {
+    return "";
+  }
+
+  const degrees = bearingDegrees(origin, { latitude: Number(drop.latitude), longitude: Number(drop.longitude) });
+  const cardinal = CARDINALS[Math.round(degrees / 45) % 8];
+
+  return `
+    <span class="hd-drop-public__compass" title="Dirección hacia el Drop">
+      <i style="transform: rotate(${Math.round(degrees)}deg)">↑</i>
+      ${cardinal} · ${Math.round(degrees)}°
+    </span>
+  `;
+}
+
+function injectFilters() {
+  const list = qs("#nearbyDropsList");
+
+  if (!list || qs(".px-filters")) return;
+
+  const bar = document.createElement("div");
+
+  bar.className = "px-filters";
+  bar.setAttribute("aria-label", "Filtrar Drops");
+  bar.innerHTML = FILTERS.map(
+    (filter) => `<button type="button" class="px-chip${filter.id === activeFilter ? " is-on" : ""}" data-filter="${filter.id}">${filter.label}</button>`
+  ).join("");
+
+  list.insertAdjacentElement("beforebegin", bar);
+
+  bar.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-filter]");
+
+    if (!button) return;
+
+    activeFilter = button.dataset.filter;
+    bar.querySelectorAll("[data-filter]").forEach((chip) => chip.classList.toggle("is-on", chip === button));
+
+    if (currentDrops.length) {
+      renderNearbyDrops(currentDrops);
+    }
+  });
+}
+
+function visibleDrops(drops) {
+  const filter = FILTERS.find((item) => item.id === activeFilter) || FILTERS[0];
+
+  return drops.filter(filter.test);
+}
 
 export function bindNearbyDropsEvents() {
   const findButton = qs("#findNearbyDropsButton");
   const refreshButton = qs("#refreshNearbyDropsButton");
+
+  injectFilters();
 
   findButton?.addEventListener("click", () => scanNearbyDrops(findButton));
   refreshButton?.addEventListener("click", () => scanNearbyDrops(refreshButton));
@@ -76,12 +151,14 @@ function renderNearbyDrops(drops) {
 
   if (!list) return;
 
-  if (!drops.length) {
+  const shown = visibleDrops(drops);
+
+  if (!shown.length) {
     list.innerHTML = `
       <div class="hd-empty">
         <i data-lucide="map-pin-off"></i>
-        <strong>No hay Drops cerca</strong>
-        <span>Hermes pasó por otro barrio. Probá moverte o crear uno nuevo.</span>
+        <strong>${drops.length ? "Ningún Drop coincide" : "No hay Drops cerca"}</strong>
+        <span>${drops.length ? "Probá con otro filtro." : "Hermes pasó por otro barrio. Probá moverte o crear uno nuevo."}</span>
       </div>
     `;
 
@@ -89,7 +166,7 @@ function renderNearbyDrops(drops) {
     return;
   }
 
-  list.innerHTML = drops.map(renderDropItem).join("");
+  list.innerHTML = shown.map(renderDropItem).join("");
 
   list.querySelectorAll("[data-unlock-drop]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -135,6 +212,8 @@ function renderDropItem(drop) {
             Estás dentro del área de lectura. Este Drop se puede abrir porque estás a
             <strong>${distance} m</strong> del punto.
           </p>
+
+          ${renderCompass(drop)}
 
           <div class="hd-drop-public__progress" aria-hidden="true">
             <span style="width: ${calculateDistanceProgress(distance, radius)}%;"></span>
