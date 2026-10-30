@@ -27,6 +27,7 @@ export function getCurrentPosition() {
         };
 
         lastKnownPosition = coords;
+        window.dispatchEvent(new CustomEvent("hermes:position", { detail: coords }));
         resolve(coords);
       },
       (error) => {

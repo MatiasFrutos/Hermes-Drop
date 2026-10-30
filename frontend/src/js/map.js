@@ -44,7 +44,7 @@ export function setUserLocation({ latitude, longitude, accuracy }) {
   const latLng = [latitude, longitude];
 
   if (!userMarker) {
-    userMarker = L.marker(latLng).addTo(map);
+    userMarker = L.marker(latLng, { icon: pulseIcon("fx-pin fx-pin--me") }).addTo(map);
     userMarker.bindPopup("Tu ubicación actual");
   } else {
     userMarker.setLatLng(latLng);
@@ -80,7 +80,7 @@ export function renderDropMarkers(drops = []) {
       return;
     }
 
-    const marker = L.marker([drop.latitude, drop.longitude]);
+    const marker = L.marker([drop.latitude, drop.longitude], { icon: pulseIcon("fx-pin") });
 
     const title = drop.title || "Drop Hermes";
     const distance = Math.round(Number(drop.distanceMeters || 0));
@@ -104,6 +104,16 @@ export function renderDropMarkers(drops = []) {
       opacity: 0.55,
       fillOpacity: 0.1
     }).addTo(dropLayer);
+  });
+}
+
+function pulseIcon(className) {
+  return L.divIcon({
+    className: "",
+    html: `<div class="${className}"></div>`,
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+    popupAnchor: [0, -12]
   });
 }
 

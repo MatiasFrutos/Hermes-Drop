@@ -72,6 +72,17 @@ async function handleCreateDropSubmit(event) {
 
     const publicCode = result?.data?.publicCode || result?.publicCode || "sin código";
 
+    window.dispatchEvent(
+      new CustomEvent("hermes:drop-created", {
+        detail: {
+          code: publicCode,
+          title: payload.title,
+          hasKeyword: Boolean(payload.keyword),
+          durationMinutes: payload.durationMinutes
+        }
+      })
+    );
+
     showToast(`Drop creado correctamente. Código: ${publicCode}`, "success");
   } catch (error) {
     const geoMessage = formatGeoError(error);

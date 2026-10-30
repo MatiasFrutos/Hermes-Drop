@@ -6,9 +6,11 @@ import { setUserLocation } from "./map.js";
 import { bindCreateDropEvents } from "./drops.create.js";
 import { bindNearbyDropsEvents, scanNearbyDrops } from "./drops.nearby.js";
 import { bindUnlockDropEvents } from "./drops.unlock.js";
+import { initFx } from "./fx.js";
 import { qs, setLocationStatus, showToast, renderIcons } from "./ui.js";
 
 function initApp() {
+  initFx();
   initMap();
   bindCreateDropEvents();
   bindNearbyDropsEvents();
