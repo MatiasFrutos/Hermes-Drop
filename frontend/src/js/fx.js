@@ -39,7 +39,6 @@ function writeStore(key, value) {
 export function initFx() {
   applyTheme(readStore(STORE.theme, "dark"));
 
-  injectCanvas();
   injectDock();
   injectHud();
   injectRadar();
@@ -47,9 +46,7 @@ export function initFx() {
   injectCounter();
   injectPalette();
 
-  bindTilt();
   bindReveal();
-  bindCursorGlow();
   bindButtonSounds();
   bindEvents();
 
@@ -65,6 +62,7 @@ export function initFx() {
 
 function applyTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme === "light" ? "light" : "dark");
+  window.dispatchEvent(new CustomEvent("hermes:theme", { detail: { theme: theme === "light" ? "light" : "dark" } }));
 }
 
 function toggleTheme() {
@@ -73,7 +71,7 @@ function toggleTheme() {
   applyTheme(next);
   writeStore(STORE.theme, next);
   beep(next === "dark" ? 360 : 640);
-  showToast(next === "dark" ? "Modo neón activado" : "Modo claro activado");
+  showToast(next === "dark" ? "Modo oscuro" : "Modo claro");
 }
 
 /* ---------- sonido (WebAudio, sin archivos) ---------- */
@@ -151,169 +149,10 @@ function syncDock() {
   renderIcons();
 }
 
-/* ---------- partículas ---------- */
-
-function injectCanvas() {
-  if (reducedMotion) return;
-
-  const canvas = document.createElement("canvas");
-
-  canvas.id = "fxParticles";
-  document.body.prepend(canvas);
-
-  const ctx = canvas.getContext("2d");
-  let w = 0;
-  let h = 0;
-  let particles = [];
-  const mouse = { x: -999, y: -999 };
-
-  function resize() {
-    const ratio = Math.min(window.devicePixelRatio || 1, 2);
-
-    w = window.innerWidth;
-    h = window.innerHeight;
-    canvas.width = w * ratio;
-    canvas.height = h * ratio;
-    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-
-    const count = Math.min(Math.floor((w * h) / 22000), 70);
-
-    particles = Array.from({ length: count }, () => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      vx: (Math.random() - 0.5) * 0.35,
-      vy: (Math.random() - 0.5) * 0.35,
-      r: Math.random() * 1.6 + 0.6
-    }));
-  }
-
-  function frame() {
-    ctx.clearRect(0, 0, w, h);
-
-    const light = document.documentElement.getAttribute("data-theme") === "light";
-    const rgb = light ? "37, 99, 235" : "34, 211, 238";
-
-    for (let i = 0; i < particles.length; i++) {
-      const p = particles[i];
-
-      p.x += p.vx;
-      p.y += p.vy;
-
-      if (p.x < 0 || p.x > w) p.vx *= -1;
-      if (p.y < 0 || p.y > h) p.vy *= -1;
-
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${rgb}, 0.7)`;
-      ctx.fill();
-
-      for (let j = i + 1; j < particles.length; j++) {
-        const q = particles[j];
-        const d = Math.hypot(p.x - q.x, p.y - q.y);
-
-        if (d < 130) {
-          ctx.strokeStyle = `rgba(${rgb}, ${0.16 * (1 - d / 130)})`;
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(q.x, q.y);
-          ctx.stroke();
-        }
-      }
-
-      const dm = Math.hypot(p.x - mouse.x, p.y - mouse.y);
-
-      if (dm < 160) {
-        ctx.strokeStyle = `rgba(139, 92, 246, ${0.35 * (1 - dm / 160)})`;
-        ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        ctx.lineTo(mouse.x, mouse.y);
-        ctx.stroke();
-      }
-    }
-
-    window.requestAnimationFrame(frame);
-  }
-
-  window.addEventListener("resize", resize);
-  window.addEventListener("pointermove", (e) => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-  });
-
-  resize();
-  frame();
-}
-
-/* ---------- luz que sigue al cursor ---------- */
-
-function bindCursorGlow() {
-  if (reducedMotion) return;
-
-  const glow = document.createElement("div");
-
-  glow.className = "fx-cursor";
-  document.body.appendChild(glow);
-
-  let x = 0;
-  let y = 0;
-  let tx = 0;
-  let ty = 0;
-
-  window.addEventListener("pointermove", (e) => {
-    tx = e.clientX;
-    ty = e.clientY;
-  });
-
-  (function loop() {
-    x += (tx - x) * 0.12;
-    y += (ty - y) * 0.12;
-    glow.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-    window.requestAnimationFrame(loop);
-  })();
-}
-
-/* ---------- tilt 3D en paneles ---------- */
-
-function bindTilt() {
-  qsa(".hd-panel, .hd-summary__item, .hd-map-section").forEach((el) => {
-    el.classList.add("fx-glow-border");
-
-    if (reducedMotion || el.classList.contains("hd-map-section")) {
-      el.addEventListener("pointermove", (e) => setSpot(el, e));
-      return;
-    }
-
-    el.classList.add("fx-tilt");
-
-    el.addEventListener("pointermove", (e) => {
-      setSpot(el, e);
-
-      const rect = el.getBoundingClientRect();
-      const px = (e.clientX - rect.left) / rect.width - 0.5;
-      const py = (e.clientY - rect.top) / rect.height - 0.5;
-      const max = el.classList.contains("hd-summary__item") ? 5 : 1.6;
-
-      el.style.transform = `perspective(1100px) rotateX(${(-py * max).toFixed(2)}deg) rotateY(${(px * max).toFixed(2)}deg)`;
-    });
-
-    el.addEventListener("pointerleave", () => {
-      el.style.transform = "";
-    });
-  });
-}
-
-function setSpot(el, e) {
-  const rect = el.getBoundingClientRect();
-
-  el.style.setProperty("--fx-mx", `${e.clientX - rect.left}px`);
-  el.style.setProperty("--fx-my", `${e.clientY - rect.top}px`);
-}
-
 /* ---------- revelado al scroll ---------- */
 
 function bindReveal() {
-  const targets = qsa(".hd-summary__item, .hd-panel, .hd-map-section, .fx-mine-section");
+  const targets = qsa(".hd-panel, .hd-map-section, .fx-mine-section");
 
   if (!("IntersectionObserver" in window)) return;
 
@@ -386,20 +225,19 @@ function setHud(id, value) {
 /* ---------- radar ---------- */
 
 function injectRadar() {
-  const actions = qs(".hd-intro-actions");
+  const intro = qs(".hd-board__intro");
 
-  if (!actions) return;
+  if (!intro) return;
 
   const wrap = document.createElement("div");
 
-  wrap.className = "fx-radar-wrap";
+  wrap.className = "fx-radar-wrap fx-radar-wrap--hero";
   wrap.innerHTML = `
     <div class="fx-radar" id="fxRadar" role="img" aria-label="Radar de Drops cercanos"></div>
     <span class="fx-radar-caption">Radar · <b id="fxRadarCount">0</b> señales</span>
   `;
 
-  wrap.style.flex = "1 1 100%";
-  actions.prepend(wrap);
+  intro.appendChild(wrap);
 }
 
 function renderRadar(drops) {
@@ -501,10 +339,11 @@ function injectMineSection() {
   const section = document.createElement("section");
 
   section.className = "fx-mine-section";
+  section.id = "mis";
   section.innerHTML = `
     <div class="hd-panel__header hd-panel__header--inline">
       <div>
-        <span class="hd-kicker"><i data-lucide="package-check"></i>Este dispositivo</span>
+        <span class="hd-kicker"><b>04</b>Este dispositivo</span>
         <h3>Mis Drops</h3>
       </div>
       <button class="hd-btn hd-btn--compact" type="button" id="fxClearMine"><i data-lucide="trash-2"></i>Limpiar</button>
@@ -552,6 +391,7 @@ function renderMine() {
           <span class="fx-mine__sub"><span class="fx-mine__code">${escapeHtml(d.code)}</span> · <span data-left>--</span></span>
         </div>
         <div class="fx-mine__actions">
+          <button class="fx-mini-btn" type="button" data-share="${escapeHtml(d.code)}" title="Compartir código" aria-label="Compartir código"><i data-lucide="share-2"></i></button>
           <button class="fx-mini-btn" type="button" data-copy="${escapeHtml(d.code)}" title="Copiar código" aria-label="Copiar código"><i data-lucide="copy"></i></button>
           <button class="fx-mini-btn" type="button" data-del="${escapeHtml(d.code)}" title="Quitar" aria-label="Quitar"><i data-lucide="x"></i></button>
         </div>
@@ -568,6 +408,23 @@ function renderMine() {
         beep(880, 0.08);
       } catch {
         showToast("No se pudo copiar.", "warning");
+      }
+    })
+  );
+
+  box.querySelectorAll("[data-share]").forEach((btn) =>
+    btn.addEventListener("click", async () => {
+      const text = `Hay un Drop esperándote en Hermes Drop. Código: ${btn.dataset.share}`;
+
+      try {
+        if (navigator.share) {
+          await navigator.share({ title: "Hermes Drop", text });
+        } else {
+          await navigator.clipboard.writeText(text);
+          showToast("Mensaje copiado para compartir.", "success");
+        }
+      } catch {
+        /* compartir cancelado */
       }
     })
   );
@@ -626,7 +483,8 @@ function confetti() {
   document.body.appendChild(canvas);
 
   const ctx = canvas.getContext("2d");
-  const colors = ["#22d3ee", "#8b5cf6", "#3b82f6", "#f472b6", "#facc15"];
+  const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#d9c7a3";
+  const colors = [accent, "#f5f3ee", "#8a8a8f", accent];
   const pieces = Array.from({ length: 140 }, () => ({
     x: canvas.width / 2,
     y: canvas.height * 0.4,
@@ -676,7 +534,7 @@ const COMMANDS = [
   { icon: "scan-search", label: "Buscar Drops cercanos", run: () => qs("#findNearbyDropsButton")?.click() },
   { icon: "map", label: "Ir al mapa", run: () => goto("#mapa") },
   { icon: "package-check", label: "Ver Mis Drops", run: () => qs(".fx-mine-section")?.scrollIntoView({ behavior: "smooth" }) },
-  { icon: "sun-moon", label: "Cambiar tema", run: toggleTheme },
+  { icon: "sun-moon", label: "Cambiar tema claro / oscuro", run: toggleTheme },
   { icon: "volume-2", label: "Activar / silenciar sonido", run: toggleSound },
   { icon: "arrow-up", label: "Volver arriba", run: () => window.scrollTo({ top: 0, behavior: "smooth" }) }
 ];

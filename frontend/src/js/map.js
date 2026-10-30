@@ -4,6 +4,13 @@ let map = null;
 let userMarker = null;
 let userAccuracyCircle = null;
 let dropLayer = null;
+let tileLayer = null;
+
+function tileUrl() {
+  const light = document.documentElement.getAttribute("data-theme") === "light";
+
+  return `https://{s}.basemaps.cartocdn.com/${light ? "light_all" : "dark_all"}/{z}/{x}/{y}{r}.png`;
+}
 
 const DEFAULT_CENTER = [-34.603722, -58.381592];
 
@@ -25,13 +32,15 @@ export function initMap() {
     En algunos entornos devuelve 403 / Access blocked por política de referer.
     Usamos CARTO como proveedor visual basado en OpenStreetMap para evitar ese bloqueo.
   */
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+  tileLayer = L.tileLayer(tileUrl(), {
     subdomains: "abcd",
     maxZoom: 20,
     attribution: "&copy; OpenStreetMap &copy; CARTO"
   }).addTo(map);
 
   dropLayer = L.layerGroup().addTo(map);
+
+  window.addEventListener("hermes:theme", () => tileLayer?.setUrl(tileUrl()));
 
   return map;
 }

@@ -13,17 +13,11 @@
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-  <link rel="stylesheet" href="./src/css/styles.css" />
-  <link rel="stylesheet" href="./src/css/layout.css" />
-  <link rel="stylesheet" href="./src/css/forms.css" />
-  <link rel="stylesheet" href="./src/css/buttons.css" />
-  <link rel="stylesheet" href="./src/css/map.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" />
 
-  <link rel="stylesheet" href="./src/css/futuristic.css" />
-  <link rel="stylesheet" href="./src/css/premium.css" />
+  <link rel="stylesheet" href="./src/css/app.css" />
 
   <script>
     try {
@@ -35,40 +29,19 @@
 </head>
 
 <body>
-  <div class="hd-page-bg">
-    <span class="hd-blob hd-blob--one"></span>
-    <span class="hd-blob hd-blob--two"></span>
-    <span class="hd-blob hd-blob--three"></span>
-  </div>
-
   <div class="hd-app-shell">
     <header class="hd-header">
-      <a class="hd-brand" href="#" aria-label="Hermes Drop">
-        <div class="hd-brand__mark hd-brand__mark--image">
-          <img src="./public/hermes-icon.png" alt="Hermes Drop" />
-        </div>
-
-        <div>
-          <h1>Hermes Drop</h1>
-          <p>Mensajes por ubicación</p>
-        </div>
+      <a class="hd-brand" href="#top" aria-label="Hermes Drop">
+        <span class="hd-brand__mark"><img src="./public/hermes-icon.png" alt="" /></span>
+        <span class="hd-brand__name">Hermes Drop</span>
       </a>
 
       <nav class="hd-nav" aria-label="Navegación principal">
-        <a href="#crear">
-          <i data-lucide="plus-circle"></i>
-          Crear
-        </a>
-
-        <a href="#explorar">
-          <i data-lucide="radar"></i>
-          Explorar
-        </a>
-
-        <a href="#mapa">
-          <i data-lucide="map"></i>
-          Mapa
-        </a>
+        <a href="#crear" data-nav><span>01</span>Crear</a>
+        <a href="#explorar" data-nav><span>02</span>Explorar</a>
+        <a href="#mapa" data-nav><span>03</span>Mapa</a>
+        <a href="#mis" data-nav><span>04</span>Mis Drops</a>
+        <i class="hd-nav__bar" aria-hidden="true"></i>
       </nav>
 
       <div class="hd-header__status" id="locationStatus">
@@ -77,78 +50,62 @@
       </div>
     </header>
 
-    <main class="hd-main">
+    <main class="hd-main" id="top">
       <section class="hd-board">
         <section class="hd-board__intro">
           <div class="hd-intro">
-            <div class="hd-hero__badge">
-              <i data-lucide="lock-keyhole"></i>
-              Sin login · Sin registro · Solo ubicación
-            </div>
+            <span class="hd-hero__badge">Sin login · Sin registro · Solo ubicación</span>
 
-            <h2>Mensajes que se leen solo en el lugar correcto.</h2>
+            <h2 aria-label="Mensajes que se leen solo en el lugar correcto.">
+              <span class="w" style="--d:0"><span>Mensajes</span></span>
+              <span class="w" style="--d:1"><span>que</span></span>
+              <span class="w" style="--d:2"><span>se</span></span>
+              <span class="w" style="--d:3"><span>leen</span></span>
+              <span class="w em" style="--d:4"><span>solo</span></span>
+              <span class="w em" style="--d:5"><span>en</span></span>
+              <span class="w em" style="--d:6"><span>el</span></span>
+              <span class="w em" style="--d:7"><span>lugar</span></span>
+              <span class="w em" style="--d:8"><span>correcto.</span></span>
+            </h2>
 
             <p>
               Creá un Drop con texto, emoji, foto opcional, radio de lectura, duración y clave.
               El contenido se desbloquea cuando alguien llega físicamente al punto.
             </p>
-          </div>
 
-          <div class="hd-intro-actions">
-            <button class="hd-btn hd-btn--primary" type="button" id="openCreateDropButton">
-              <i data-lucide="plus"></i>
-              Crear Drop
-            </button>
+            <div class="hd-intro-actions">
+              <button class="hd-btn hd-btn--primary" type="button" id="openCreateDropButton">
+                <i data-lucide="plus"></i>
+                Crear Drop
+              </button>
 
-            <button class="hd-btn hd-btn--secondary" type="button" id="findNearbyDropsButton">
-              <i data-lucide="scan-search"></i>
-              Buscar cercanos
-            </button>
+              <button class="hd-btn hd-btn--secondary" type="button" id="findNearbyDropsButton">
+                <i data-lucide="scan-search"></i>
+                Buscar cercanos
+              </button>
+            </div>
           </div>
         </section>
 
+        <div class="hd-marquee" aria-hidden="true">
+          <div class="hd-marquee__track">
+            <span>Anónimo</span><span>Rango definido</span><span>Duración limitada</span><span>Foto opcional</span><span>Clave opcional</span><span>Lectura única</span>
+            <span>Anónimo</span><span>Rango definido</span><span>Duración limitada</span><span>Foto opcional</span><span>Clave opcional</span><span>Lectura única</span>
+          </div>
+        </div>
+
         <section class="hd-summary">
-          <div class="hd-summary__item">
-            <i data-lucide="user-x"></i>
-            <div>
-              <strong>Anónimo</strong>
-              <span>No hay cuentas ni perfiles.</span>
-            </div>
-          </div>
-
-          <div class="hd-summary__item">
-            <i data-lucide="locate-fixed"></i>
-            <div>
-              <strong>Rango</strong>
-              <span>Distancia máxima para leerlo.</span>
-            </div>
-          </div>
-
-          <div class="hd-summary__item">
-            <i data-lucide="timer"></i>
-            <div>
-              <strong>Duración</strong>
-              <span>Tiempo antes de desaparecer.</span>
-            </div>
-          </div>
-
-          <div class="hd-summary__item">
-            <i data-lucide="image"></i>
-            <div>
-              <strong>Foto opcional</strong>
-              <span>Adjuntá contexto visual.</span>
-            </div>
-          </div>
+          <div class="hd-summary__item"><i data-lucide="user-x"></i><div><strong>Anónimo</strong><span>No hay cuentas ni perfiles.</span></div></div>
+          <div class="hd-summary__item"><i data-lucide="locate-fixed"></i><div><strong>Rango</strong><span>Distancia máxima para leerlo.</span></div></div>
+          <div class="hd-summary__item"><i data-lucide="timer"></i><div><strong>Duración</strong><span>Tiempo antes de desaparecer.</span></div></div>
+          <div class="hd-summary__item"><i data-lucide="image"></i><div><strong>Foto opcional</strong><span>Adjuntá contexto visual.</span></div></div>
         </section>
 
         <section class="hd-workspace">
           <article class="hd-panel hd-panel--form" id="crear">
             <div class="hd-panel__header">
               <div>
-                <span class="hd-kicker">
-                  <i data-lucide="message-square-plus"></i>
-                  Nuevo mensaje
-                </span>
+                <span class="hd-kicker"><b>01</b>Nuevo mensaje</span>
                 <h3>Crear Drop</h3>
               </div>
             </div>
@@ -299,10 +256,7 @@
           <article class="hd-panel hd-panel--drops" id="explorar">
             <div class="hd-panel__header hd-panel__header--inline">
               <div>
-                <span class="hd-kicker">
-                  <i data-lucide="radar"></i>
-                  Exploración
-                </span>
+                <span class="hd-kicker"><b>02</b>Exploración</span>
                 <h3>Drops cercanos</h3>
               </div>
 
@@ -325,17 +279,11 @@
         <section class="hd-map-section" id="mapa">
           <div class="hd-panel__header hd-panel__header--inline">
             <div>
-              <span class="hd-kicker">
-                <i data-lucide="map"></i>
-                Mapa operativo
-              </span>
+              <span class="hd-kicker"><b>03</b>Mapa</span>
               <h3>Zona Hermes</h3>
             </div>
 
-            <span class="hd-map-hint">
-              <i data-lucide="mouse-pointer-2"></i>
-              Mové el mapa y explorá
-            </span>
+            <span class="hd-map-hint">Mové el mapa y explorá</span>
           </div>
 
           <div id="map" class="hd-map"></div>
@@ -420,7 +368,7 @@
   </dialog>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.js"></script>
 
   <script type="module" src="./src/js/app.js"></script>
 </body>
