@@ -681,6 +681,10 @@ const COMMANDS = [
   { icon: "arrow-up", label: "Volver arriba", run: () => window.scrollTo({ top: 0, behavior: "smooth" }) }
 ];
 
+export function registerCommand(command) {
+  COMMANDS.push(command);
+}
+
 function goto(hash, focusSelector) {
   qs(hash)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
