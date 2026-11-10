@@ -8,6 +8,7 @@ import { bindNearbyDropsEvents, scanNearbyDrops } from "./drops.nearby.js";
 import { bindUnlockDropEvents } from "./drops.unlock.js";
 import { initFx } from "./fx.js";
 import { initPremium } from "./premium.js";
+import { initFeatures } from "./features.js";
 import { qs, setLocationStatus, showToast, renderIcons } from "./ui.js";
 
 function initApp() {
@@ -18,6 +19,7 @@ function initApp() {
   bindNearbyDropsEvents();
   bindUnlockDropEvents();
   bindHeroEvents();
+  initFeatures();
 
   invalidateMapSize();
   setLocationStatus("Ubicación pendiente");

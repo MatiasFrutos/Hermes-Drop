@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Hermes Drop">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1d1c25"/>
+      <stop offset="1" stop-color="#08080a"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6ead0"/>
+      <stop offset="1" stop-color="#c8a55a"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="42%" r="55%">
+      <stop offset="0" stop-color="#d9c7a3" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#d9c7a3" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="116" fill="url(#glow)"/>
+  <rect x="6" y="6" width="500" height="500" rx="110" fill="none" stroke="#fff" stroke-opacity=".08" stroke-width="2"/>
+
+  <!-- alas -->
+  <g fill="url(#gold)">
+    <path d="M214 250 C170 252 112 226 66 150 C112 164 150 160 188 136 C170 168 176 196 214 214 Z"/>
+    <path d="M206 296 C164 304 112 290 76 238 C116 244 148 238 182 220 C168 246 176 270 206 282 Z" opacity=".78"/>
+    <path d="M200 338 C168 348 128 342 102 310 C132 312 156 304 178 292 C170 312 178 326 200 330 Z" opacity=".55"/>
+    <path d="M298 250 C342 252 400 226 446 150 C400 164 362 160 324 136 C342 168 336 196 298 214 Z"/>
+    <path d="M306 296 C348 304 400 290 436 238 C396 244 364 238 330 220 C344 246 336 270 306 282 Z" opacity=".78"/>
+    <path d="M312 338 C344 348 384 342 410 310 C380 312 356 304 334 292 C342 312 334 326 312 330 Z" opacity=".55"/>
+  </g>
+
+  <!-- pin de ubicacion -->
+  <path d="M256 92 C204 92 166 132 166 184 C166 252 256 380 256 380 C256 380 346 252 346 184 C346 132 308 92 256 92 Z" fill="url(#gold)"/>
+  <circle cx="256" cy="184" r="44" fill="#0b0b0e"/>
+  <circle cx="256" cy="184" r="18" fill="url(#gold)"/>
+
+  <!-- ondas de drop -->
+  <ellipse cx="256" cy="418" rx="70" ry="14" fill="none" stroke="#d9c7a3" stroke-opacity=".75" stroke-width="6"/>
+  <ellipse cx="256" cy="418" rx="116" ry="24" fill="none" stroke="#d9c7a3" stroke-opacity=".3" stroke-width="5"/>
+</svg>

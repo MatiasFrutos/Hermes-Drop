@@ -6,10 +6,97 @@ let userAccuracyCircle = null;
 let dropLayer = null;
 let tileLayer = null;
 
+let layerMode = "auto";
+let pickMarker = null;
+let pickCircle = null;
+let pickedLocation = null;
+let onMapPick = null;
+
+const LAYERS = {
+  dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+  light: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+  streets: "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+  satellite: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+};
+
 function tileUrl() {
+  if (layerMode !== "auto") return LAYERS[layerMode];
+
   const light = document.documentElement.getAttribute("data-theme") === "light";
 
-  return `https://{s}.basemaps.cartocdn.com/${light ? "light_all" : "dark_all"}/{z}/{x}/{y}{r}.png`;
+  return light ? LAYERS.light : LAYERS.dark;
+}
+
+export function setMapLayer(mode) {
+  layerMode = LAYERS[mode] ? mode : "auto";
+  tileLayer?.setUrl(tileUrl());
+}
+
+export function getMapLayerModes() {
+  return ["auto", ...Object.keys(LAYERS)];
+}
+
+export function centerOnUser() {
+  if (!map || !userMarker) return false;
+
+  map.flyTo(userMarker.getLatLng(), 17, { duration: 0.8 });
+  return true;
+}
+
+export function getMapElement() {
+  return map;
+}
+
+export function setMapPickMode(enabled, callback) {
+  if (!map) initMap();
+
+  onMapPick = enabled ? callback : null;
+  map.getContainer().style.cursor = enabled ? "crosshair" : "";
+
+  if (!enabled) clearPickedLocation();
+}
+
+export function getPickedLocation() {
+  return pickedLocation;
+}
+
+export function clearPickedLocation() {
+  pickedLocation = null;
+  pickMarker?.remove();
+  pickCircle?.remove();
+  pickMarker = null;
+  pickCircle = null;
+}
+
+export function setPickedRadius(radius) {
+  pickCircle?.setRadius(Number(radius) || 50);
+}
+
+export function placePick(latitude, longitude, radius = 50) {
+  if (!map) initMap();
+
+  pickedLocation = { latitude, longitude, accuracy: 0 };
+
+  const latLng = [latitude, longitude];
+
+  if (!pickMarker) {
+    pickMarker = L.marker(latLng, { icon: pulseIcon("fx-pin fx-pin--pick"), draggable: true }).addTo(map);
+
+    pickMarker.on("dragend", () => {
+      const next = pickMarker.getLatLng();
+      pickedLocation = { latitude: next.lat, longitude: next.lng, accuracy: 0 };
+      pickCircle?.setLatLng(next);
+      onMapPick?.(pickedLocation);
+    });
+
+    pickCircle = L.circle(latLng, { radius, weight: 1.5, dashArray: "6 6", opacity: 0.8, fillOpacity: 0.12, color: "#8fd6a4" }).addTo(map);
+  } else {
+    pickMarker.setLatLng(latLng);
+    pickCircle.setLatLng(latLng);
+    pickCircle.setRadius(radius);
+  }
+
+  onMapPick?.(pickedLocation);
 }
 
 const DEFAULT_CENTER = [-34.603722, -58.381592];
@@ -39,6 +126,13 @@ export function initMap() {
   }).addTo(map);
 
   dropLayer = L.layerGroup().addTo(map);
+
+  map.on("click", (event) => {
+    if (!onMapPick) return;
+
+    const radius = Number(document.getElementById("dropRadius")?.value || 50);
+    placePick(event.latlng.lat, event.latlng.lng, radius);
+  });
 
   window.addEventListener("hermes:theme", () => tileLayer?.setUrl(tileUrl()));
 
