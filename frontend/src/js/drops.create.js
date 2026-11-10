@@ -2,7 +2,7 @@
 
 import { createDrop } from "./api.js";
 import { getCurrentPosition, formatGeoError } from "./geo.js";
-import { setUserLocation } from "./map.js";
+import { setUserLocation, getPickedLocation } from "./map.js";
 import { qs, qsa, setButtonLoading, setLocationStatus, showToast, renderIcons } from "./ui.js";
 
 let selectedImageDataUrl = "";
@@ -40,10 +40,13 @@ async function handleCreateDropSubmit(event) {
   try {
     setButtonLoading(submitButton, true, "Tomando ubicación...");
 
-    const position = await getCurrentPosition();
+    const picked = getPickedLocation();
+    const position = picked || (await getCurrentPosition());
 
-    setUserLocation(position);
-    setLocationStatus("Ubicación detectada", "ok");
+    if (!picked) {
+      setUserLocation(position);
+      setLocationStatus("Ubicación detectada", "ok");
+    }
 
     const formData = new FormData(form);
 

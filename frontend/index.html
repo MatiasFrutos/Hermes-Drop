@@ -8,6 +8,7 @@
 
   <title>Hermes Drop</title>
 
+  <link rel="icon" href="./public/hermes-logo.svg" type="image/svg+xml" />
   <link rel="icon" href="./public/hermes-icon.png" type="image/png" />
   <link rel="apple-touch-icon" href="./public/hermes-icon.png" />
 
@@ -32,7 +33,7 @@
   <div class="hd-app-shell">
     <header class="hd-header">
       <a class="hd-brand" href="#top" aria-label="Hermes Drop">
-        <span class="hd-brand__mark"><img src="./public/hermes-icon.png" alt="" /></span>
+        <span class="hd-brand__mark"><img src="./public/hermes-logo.svg" alt="" /></span>
         <span class="hd-brand__name">Hermes Drop</span>
       </a>
 
@@ -111,6 +112,15 @@
             </div>
 
             <form class="hd-form" id="createDropForm">
+              <div class="hd-form__group hd-loc-pick" id="locPick">
+                <label>Ubicación del Drop</label>
+                <div class="hd-loc-pick__tabs" role="tablist">
+                  <button type="button" class="is-active" data-loc-mode="gps"><i data-lucide="locate-fixed"></i> Mi ubicación</button>
+                  <button type="button" data-loc-mode="map"><i data-lucide="map-pinned"></i> Elegir en el mapa</button>
+                </div>
+                <span class="hd-loc-pick__info" id="locPickInfo">Se usará tu posición GPS al guardar.</span>
+              </div>
+
               <div class="hd-form__group">
                 <label for="dropTitle">Título opcional</label>
                 <input id="dropTitle" name="title" type="text" maxlength="80" placeholder="Ej: Pista del parque" />
@@ -286,7 +296,9 @@
             <span class="hd-map-hint">Mové el mapa y explorá</span>
           </div>
 
-          <div id="map" class="hd-map"></div>
+          <div class="hd-map-wrap" id="mapWrap">
+            <div id="map" class="hd-map"></div>
+          </div>
         </section>
       </section>
     </main>
@@ -330,7 +342,7 @@
     <div class="hd-modal__content hd-message-modal__content">
       <div class="hd-message-modal__hero">
         <div class="hd-message-modal__icon">
-          <img src="./public/hermes-icon.png" alt="Hermes Drop" />
+          <img src="./public/hermes-logo.svg" alt="Hermes Drop" />
         </div>
 
         <div>
